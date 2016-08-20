@@ -17,7 +17,7 @@ Access-Control-Allow-Credentials: true
     "Content-Length": "43", 
     "Content-Type": "application/json", 
     "Host": "localhost:8000", 
-    "User-Agent": "curl/7.50.1"
+    "User-Agent": "curl/%% '.*' %%"
   }, 
   "json": {
     "foo": "bar", 

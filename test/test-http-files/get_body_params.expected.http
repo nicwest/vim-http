@@ -14,7 +14,7 @@ Access-Control-Allow-Credentials: true
     "Content-Length": "17", 
     "Content-Type": "application/x-www-form-urlencoded", 
     "Host": "localhost:8000", 
-    "User-Agent": "curl/7.50.1"
+    "User-Agent": "curl/%% '.*' %%"
   }, 
   "origin": "%% '[0-9.]\+' %%", 
   "url": "http://localhost:8000/get"

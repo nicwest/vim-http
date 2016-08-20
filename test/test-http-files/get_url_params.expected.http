@@ -15,7 +15,7 @@ Access-Control-Allow-Credentials: true
   "headers": {
     "Accept": "*/*", 
     "Host": "localhost:8000", 
-    "User-Agent": "curl/7.50.1"
+    "User-Agent": "curl/%% '.*' %%"
   }, 
   "origin": "%% '[0-9.]\+' %%", 
   "url": "http://localhost:8000/get?foo=bar&lol=beans"
