@@ -1,5 +1,5 @@
 HTTP/1.1 302 FOUND
-Server: gunicorn/19.3.0
+Server: gunicorn/%% '.*' %%
 Date: %% '.*' %%
 Connection: close
 Content-Type: text/html; charset=utf-8

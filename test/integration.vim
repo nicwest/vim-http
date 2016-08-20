@@ -37,14 +37,14 @@ function s:assert_response(name) abort
                     if len(l:patterns) > l:pattern_nr+1
                         let l:pp = l:p . l:patterns[l:pattern_nr+1]
                     endif
-                    if l:line[l:line_index:] !~ l:pp
+                    if l:line[l:line_index :] !~ l:pp
                         let l:bad = 1
                         break
                     endif
-                    let l:line_index += len(substitute(l:line[l:line_index:], l:pp, '\1', ''))
+                    let l:line_index += len(substitute(l:line[l:line_index  :], l:pp, '\1', ''))
                     let l:in_pattern = 0
                 else
-                    if l:pattern != l:line[l:line_index:l:line_index + len(l:pattern)-1]
+                    if l:pattern != l:line[l:line_index : l:line_index + len(l:pattern)-1]
                         let l:bad = 1
                         break
                     end
