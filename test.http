@@ -1,2 +1,11 @@
-GET http://httpstat.us/414 HTTP/1.1
-Host: httpstat.us
+POST http://httpbin.org/post HTTP/1.1
+Host: httpbin.org
+Content-Type: application/json
+
+
+{
+    "foo": "foo",
+    "bar": 123.21
+}
+
+
