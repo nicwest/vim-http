@@ -14,3 +14,5 @@ Session.vim
 tags
 
 vim-themis
+.vagrant
+Vagrantfile
