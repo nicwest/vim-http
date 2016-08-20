@@ -105,7 +105,7 @@ endfunction
 
 function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
-    let l:buffer_name = l:request_buffer_name . '.response.' . localtime()
+    let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
     execute 'new ' . l:buffer_name
     set ft=http
 
@@ -140,3 +140,5 @@ endfunction
 command! -bang Http call <SID>do_buffer('<bang>' == '!')
 command! HttpShowCurl call <SID>show_curl()
 command! HttpShowRequest call <SID>show_request()
+
+autocmd FileType http set fileformat=dos
