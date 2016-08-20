@@ -1,3 +1,4 @@
-let g:http_test_files = expand('%', ':p:h') . '/test-http-files/'
+
+let g:http_test_files = expand('<sfile>:p:h') . '/test-http-files/'
 
 call themis#log('test_files_location: ' . g:http_test_files)
