@@ -1,0 +1,29 @@
+HTTP/1.1 302 FOUND
+Server: gunicorn/19.3.0
+Date: %% '.*' %%
+Connection: close
+Content-Type: text/html; charset=utf-8
+Content-Length: 0
+Location: http://localhost:8000/get
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+HTTP/1.1 200 OK
+Server: gunicorn/19.3.0
+Date: %% '.*' %%
+Connection: close
+Content-Type: application/json
+Content-Length: 189
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Host": "localhost:8000", 
+    "User-Agent": "curl/7.50.1"
+  }, 
+  "origin": "%% '[0-9.]\+' %%", 
+  "url": "http://localhost:8000/get"
+}

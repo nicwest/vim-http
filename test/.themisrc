@@ -1,0 +1,1 @@
+let g:http_test_files = expand('%', ':p:h') . '/test-http-files/'

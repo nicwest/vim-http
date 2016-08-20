@@ -1,0 +1,28 @@
+HTTP/1.1 200 OK
+Server: gunicorn/19.3.0
+Date: %% '.*' %%
+Connection: close
+Content-Type: application/json
+Content-Length: 419
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {}, 
+  "data": "{\r\n    \"foo\": \"bar\",\r\n    \"lol\": \"beans\"\r\n}", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Content-Length": "43", 
+    "Content-Type": "application/json", 
+    "Host": "localhost:8000", 
+    "User-Agent": "curl/7.50.1"
+  }, 
+  "json": {
+    "foo": "bar", 
+    "lol": "beans"
+  }, 
+  "origin": "%% '[0-9.]\+' %%", 
+  "url": "http://localhost:8000/post"
+}

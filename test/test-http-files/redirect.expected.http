@@ -1,0 +1,10 @@
+HTTP/1.1 302 FOUND
+Server: gunicorn/19.3.0
+Date: %% '.*' %%
+Connection: close
+Content-Type: text/html; charset=utf-8
+Content-Length: 0
+Location: http://localhost:8000/get
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+

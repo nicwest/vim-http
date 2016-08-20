@@ -86,7 +86,7 @@ function! s:in_curl_format(request) abort
 
     let l:method = printf(' -X %s', a:request.method)
 
-    let l:url = a:request.uri
+    let l:url = shellescape(a:request.uri)
 
     let l:headers = ''
 

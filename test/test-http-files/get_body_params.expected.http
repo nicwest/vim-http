@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Server: gunicorn/19.3.0
+Date: %% '.*' %%
+Connection: close
+Content-Type: application/json
+Content-Length: 276
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Content-Length": "17", 
+    "Content-Type": "application/x-www-form-urlencoded", 
+    "Host": "localhost:8000", 
+    "User-Agent": "curl/7.50.1"
+  }, 
+  "origin": "%% '[0-9.]\+' %%", 
+  "url": "http://localhost:8000/get"
+}
