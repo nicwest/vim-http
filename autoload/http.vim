@@ -1,6 +1,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:V = vital#vim_http#new()
+let s:Base64 = s:V.import('Data.Base64')
+
 function! s:new_request() abort
     let l:response = { 
                 \ 'method': 'GET',
@@ -125,6 +128,9 @@ function! s:new_response_buffer(request_buffer, response) abort
 endfunction
 
 function! http#do_buffer(follow) abort
+    if g:vim_http_clean_before_do
+      call http#clean()
+    end
     let l:buffer = bufnr('')
     let l:request = s:parse_request_buffer(l:buffer, a:follow)
     let l:curl = s:in_curl_format(l:request)
@@ -143,6 +149,39 @@ function! http#show_request() abort
     let l:buffer = bufnr('')
     let l:request = s:parse_request_buffer(l:buffer, 0)
     echo l:request
+endfunction
+
+function! http#clean() abort
+  let l:buffer = bufnr('')
+  let l:request = s:parse_request_buffer(l:buffer, 0)
+
+  if index(['1.1', '2.0'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
+    let l:matches = matchlist(l:request.uri, '^\([^:]\+://\)\([^/]\+\)')
+    let l:host = l:matches[2]
+    if len(l:host)
+      call append(1, 'Host: ' . l:host)
+    endif
+  endif
+
+  if !has_key(l:request.headers, 'Content-Length')
+    let l:content_length = len(l:request.content)
+    call append(1 + len(l:request.headers), 'Content-Length: ' . l:content_length)
+  endif
+endfunction
+
+function! http#auth() abort
+  let l:buffer = bufnr('')
+  let l:request = s:parse_request_buffer(l:buffer, 0)
+
+  let l:method = input('method [Basic]: ')
+  if len(l:method) == 0
+    let l:method = 'Basic'
+  end
+  let l:user = input('user: ')
+  let l:password = input('password: ')
+  let l:encoded = s:Base64.encode(l:user . ':' . l:password)
+  let l:header = 'Authorization: ' . l:method . ' ' . l:encoded
+  call append(1 + len(l:request.headers), l:header)
 endfunction
 
 " Teardown:{{{1
