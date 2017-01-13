@@ -6,7 +6,7 @@ vim-http
 simple wrapper over curl and http syntax highlighting.
 
 
-Useage
+Usage
 ------
 
 Write a raw http request
@@ -25,6 +25,17 @@ Accept: application/json
 hood
 
 `:HttpShowRequest` displays the internal object representing the request
+
+`:HttpClean` will add Host and Content-Length headers
+
+`:HttpAuth` will prompt for authorization credentials
+
+
+Configuration
+-------------
+
+`g:vim_http_clean_before_do` if set to `1` (default) will clean a request before
+sending it to curl. Disable this by setting this global to `0`
 
 
 Tests
