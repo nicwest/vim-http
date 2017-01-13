@@ -156,7 +156,7 @@ function! http#clean() abort
   let l:request = s:parse_request_buffer(l:buffer, 0)
 
   if index(['1.1', '2.0'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
-    let l:matches = matchlist(l:request.uri, '^\([^:]\+://\)\([^/]\+\)')
+    let l:matches = matchlist(l:request.uri, '^\([^:]\+://\)\?\([^/]\+\)')
     let l:host = l:matches[2]
     if len(l:host)
       call append(1, 'Host: ' . l:host)
