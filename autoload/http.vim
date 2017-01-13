@@ -163,7 +163,7 @@ function! http#clean() abort
     endif
   endif
 
-  if !has_key(l:request.headers, 'Content-Length')
+  if !has_key(l:request.headers, 'Content-Length') && len(l:request.content)
     let l:content_length = len(l:request.content)
     call append(1 + len(l:request.headers), 'Content-Length: ' . l:content_length)
   endif

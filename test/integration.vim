@@ -1,4 +1,5 @@
 let s:suite = themis#suite('integration')
+let s:assert = themis#helper('assert')
 
 " Setup: {{{1
 let s:original_buffers = filter(range(1, bufnr('$')), 'bufexists(v:val)')
@@ -73,6 +74,10 @@ function s:assert_response(name) abort
         throw themis#failure(msg)
     endif
 endfunction
+
+function! s:command_with_input(cmd, input)
+  exe 'normal :' . a:cmd .''.join(a:input, '').''
+endfunction
 " }}}
 " GET: {{{1
 function! s:suite.simple_get()
@@ -104,11 +109,44 @@ function! s:suite.redirect_with_follow()
     Http!
     call s:assert_response('redirect_follow')
 endfunction
-
+" }}}
+" POST :{{{1
 function! s:suite.post_json()
     call s:load_request_expected('post_json')
     Http!
     call s:assert_response('post_json')
+endfunction
+
+" }}}
+" Clean :{{{1
+function! s:suite.clean()
+    call s:load_request_expected('post_incomplete')
+    HttpClean
+    let l:contents = getline(0, '$')
+    let l:expected = ['POST http://localhost:8000/post HTTP/1.1', 
+          \ 'Host: localhost:8000',
+          \ 'Content-Length: 43',
+          \ 'Content-Type: application/json',
+          \ '',
+          \ '',
+          \ '{',
+          \ '    "foo": "bar",',
+          \ '    "lol": "beans"',
+          \ '}',
+          \ ]
+    call s:assert.equal(l:contents, l:expected)
+endfunction
+" }}}
+" Auth :{{{1
+function! s:suite.auth()
+    call s:load_request_expected('simple_get')
+    call s:command_with_input('HttpAuth', ['Bearer', 'borisjohnson', 'ijustcantwaittobeking'])
+    let l:contents = getline(0, '$')
+    let l:expected = ['GET http://localhost:8000/get HTTP/1.1', 
+          \ 'Host: localhost:8000',
+          \ 'Authorization: Bearer Ym9yaXNqb2huc29uOmlqdXN0Y2FudHdhaXR0b2Jla2luZw==',
+          \ ]
+    call s:assert.equal(l:contents, l:expected)
 endfunction
 " }}}
 " Misc: {{{1
