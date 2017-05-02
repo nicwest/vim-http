@@ -13,9 +13,9 @@ Server: gunicorn/%% '.*' %%
 Date: %% '.*' %%
 Connection: close
 Content-Type: application/json
-Content-Length: 189
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Credentials: true
+Content-Length: 189
 
 {
   "args": {}, 
