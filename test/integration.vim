@@ -14,7 +14,7 @@ endfunction
 
 function! s:load_request_expected(name) abort
     let l:request_path = g:http_test_files . a:name . '.http'
-    execute 'edit ' . l:request_path
+    execute 'edit! ' . l:request_path
 endfunction
 
 function s:assert_response(name) abort
@@ -168,7 +168,6 @@ function! s:suite.auth()
     call s:assert.equal(l:contents, l:expected)
 endfunction
 " }}}
-
 " Headers: {{{1
 function! s:suite.remove_header()
   call s:load_request_expected('get_with_multiple_headers')
@@ -200,6 +199,6 @@ function! s:suite.set_header()
         \ ]
   call s:assert.equal(l:contents, l:expected)
 endfunction
-
+" }}}
 " Misc: {{{1
 " vim:fdm=marker

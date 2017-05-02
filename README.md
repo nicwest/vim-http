@@ -37,6 +37,33 @@ Configuration
 `g:vim_http_clean_before_do` if set to `1` (default) will clean a request before
 sending it to curl. Disable this by setting this global to `0`
 
+Helper Methods
+--------------
+
+`http#remove_header(header)` removes all occurances of the given header in the
+current buffer.
+
+`http#set_header(header, value)` sets the header to the given value in the
+current buffer, removes duplicates
+
+Examples for your vimrc:
+
+```viml
+function! s:set_json_header() abort
+  call http#set_header('Content-Type', 'application/json')
+endfunction
+
+function! s:clean_personal_stuff() abort
+  call http#remove_header('Cookie')
+  call http#remove_header('Accept')
+  call http#remove_header('User-Agent')
+  call http#remove_header('Accept-Language')
+endfunction 
+
+command! JSON call s:set_json_header()
+command! Anon call s:clean_personal_stuff()
+```
+
 
 Tests
 -----
