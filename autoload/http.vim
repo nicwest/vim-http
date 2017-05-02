@@ -130,6 +130,15 @@ function! s:lines_with_header(header) abort
   return l:lines
 endfunction
 
+function! s:remove_header(header) abort
+  let l:offset = 0
+  for l:linenr in s:lines_with_header(a:header)
+    let l:target = l:linenr - l:offset
+    exe l:target."delete _"
+    let l:offset = l:offset + 1
+  endfor
+endfunction
+
 function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
     let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
@@ -189,9 +198,7 @@ function! http#clean() abort
       let l:correct = input("correct Content-Length header? [Y]/N:")
       if len(l:correct) == 0 || tolower(l:correct) != "n"
         call remove(l:request.headers, 'Content-Length')
-        for l:linenr in s:lines_with_header('Content-Length')
-          exe l:linenr."delete _"
-        endfor
+        call s:remove_header('Content-Length')
       endif
     endif
   endif
@@ -224,6 +231,17 @@ function! http#compressed() abort
 
   let l:header = 'Accept-Encoding: deflate, gzip'
   call append(1 + len(l:request.headers), l:header)
+endfunction
+
+function! http#remove_header(header) abort
+  call s:remove_header(a:header)
+endfunction
+
+function! http#set_header(header, value) abort
+  call s:remove_header(a:header)
+  let l:buffer = bufnr('')
+  let l:request = s:parse_request_buffer(l:buffer, 0)
+  call append(1 + len(l:request.headers), a:header.': '.a:value)
 endfunction
 
 " Teardown:{{{1
