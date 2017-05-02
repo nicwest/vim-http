@@ -114,6 +114,22 @@ function! s:in_curl_format(request) abort
 
 endfunction
 
+function! s:lines_with_header(header) abort
+  let l:linenr = 1
+  let l:lines = []
+  while l:linenr < line('$')
+    let l:line = getline(l:linenr)
+    if l:line =~ '^\s*$'
+      break
+    endif
+    if l:line =~ "^".a:header.":"
+      call add(l:lines, l:linenr)
+    end
+    let l:linenr = l:linenr + 1
+  endwhile
+  return l:lines
+endfunction
+
 function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
     let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
@@ -155,6 +171,7 @@ function! http#clean() abort
   let l:buffer = bufnr('')
   let l:request = s:parse_request_buffer(l:buffer, 0)
 
+  " when the http proto is > 1.0 make sure we are adding a host header
   if index(['1.1', '2.0'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
     let l:matches = matchlist(l:request.uri, '^\([^:]\+://\)\?\([^/]\+\)')
     let l:host = l:matches[2]
@@ -163,8 +180,25 @@ function! http#clean() abort
     endif
   endif
 
-  if !has_key(l:request.headers, 'Content-Length') && len(l:request.content)
-    let l:content_length = len(l:request.content)
+  let l:content_length = len(l:request.content)
+
+  " when we have a Content-Length header and it doesn't match the actual
+  " content length
+  if l:content_length && has_key(l:request.headers, 'Content-Length')
+    if string(l:content_length) != l:request.headers['Content-Length'][-1]
+      let l:correct = input("correct Content-Length header? [Y]/N:")
+      if len(l:correct) == 0 || tolower(l:correct) != "n"
+        call remove(l:request.headers, 'Content-Length')
+        for l:linenr in s:lines_with_header('Content-Length')
+          exe l:linenr."delete _"
+        endfor
+      endif
+    endif
+  endif
+
+  " when we are sending content we should add a header for the content length
+  " curl is going to do this for us anyway, but it's good to be explicit
+  if  l:content_length && !has_key(l:request.headers, 'Content-Length')
     call append(1 + len(l:request.headers), 'Content-Length: ' . l:content_length)
   endif
 endfunction
@@ -181,6 +215,14 @@ function! http#auth() abort
   let l:password = input('password: ')
   let l:encoded = s:Base64.encode(l:user . ':' . l:password)
   let l:header = 'Authorization: ' . l:method . ' ' . l:encoded
+  call append(1 + len(l:request.headers), l:header)
+endfunction
+
+function! http#compressed() abort
+  let l:buffer = bufnr('')
+  let l:request = s:parse_request_buffer(l:buffer, 0)
+
+  let l:header = 'Accept-Encoding: deflate, gzip'
   call append(1 + len(l:request.headers), l:header)
 endfunction
 
