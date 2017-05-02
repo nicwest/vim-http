@@ -1,0 +1,10 @@
+POST http://localhost:8000/post HTTP/1.1
+Host: localhost:8000
+Content-Length: 20
+Content-Type: application/json
+
+
+{
+    "foo": "bar",
+    "lol": "beans"
+}

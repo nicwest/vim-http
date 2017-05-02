@@ -136,8 +136,27 @@ function! s:suite.clean()
           \ ]
     call s:assert.equal(l:contents, l:expected)
 endfunction
+
+function! s:suite.clean_replaces_invalid_content_length_header()
+  call s:load_request_expected('post_invalid_content_length')
+  call s:command_with_input('HttpClean', ['Y'])
+  let l:contents = getline(0, '$')
+  let l:expected = ['POST http://localhost:8000/post HTTP/1.1', 
+        \ 'Host: localhost:8000',
+        \ 'Content-Type: application/json',
+        \ 'Content-Length: 43',
+        \ '',
+        \ '',
+        \ '{',
+        \ '    "foo": "bar",',
+        \ '    "lol": "beans"',
+        \ '}',
+        \ ]
+  call s:assert.equal(l:contents, l:expected)
+endfunction
+
 " }}}
-" Auth :{{{1
+" Auth: {{{1
 function! s:suite.auth()
     call s:load_request_expected('simple_get')
     call s:command_with_input('HttpAuth', ['Bearer', 'borisjohnson', 'ijustcantwaittobeking'])
@@ -149,5 +168,38 @@ function! s:suite.auth()
     call s:assert.equal(l:contents, l:expected)
 endfunction
 " }}}
+
+" Headers: {{{1
+function! s:suite.remove_header()
+  call s:load_request_expected('get_with_multiple_headers')
+  call http#remove_header('User-Agent')
+  let l:contents = getline(0, '$')
+  let l:expected = ['GET http://localhost:8000/get HTTP/1.1', 
+        \ 'Host: localhost:8000',
+        \ 'Accept: text/html',
+        \ 'Accept-Encoding: gzip, deflate',
+        \ 'Accept-Language: en-US,en;q=0.5 ',
+        \ 'Connection: close',
+        \ 'Upgrade-Insecure-Requests: 1 ',
+        \ ]
+  call s:assert.equal(l:contents, l:expected)
+endfunction
+
+function! s:suite.set_header()
+  call s:load_request_expected('get_with_multiple_headers')
+  call http#set_header('User-Agent', 'qutebrowser/1.0.0')
+  let l:contents = getline(0, '$')
+  let l:expected = ['GET http://localhost:8000/get HTTP/1.1', 
+        \ 'Host: localhost:8000',
+        \ 'Accept: text/html',
+        \ 'Accept-Encoding: gzip, deflate',
+        \ 'Accept-Language: en-US,en;q=0.5 ',
+        \ 'Connection: close',
+        \ 'Upgrade-Insecure-Requests: 1 ',
+        \ 'User-Agent: qutebrowser/1.0.0',
+        \ ]
+  call s:assert.equal(l:contents, l:expected)
+endfunction
+
 " Misc: {{{1
 " vim:fdm=marker
