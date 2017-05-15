@@ -3,7 +3,7 @@
 vim-http
 ========
 
-simple wrapper over curl and http syntax highlighting.
+Simple wrapper over curl and http syntax highlighting.
 
 [![asciicast](https://asciinema.org/a/120707.png)](https://asciinema.org/a/120707)
 
