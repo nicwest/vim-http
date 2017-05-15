@@ -5,7 +5,7 @@ if !exists('g:vim_http_additional_curl_args')
   let g:vim_http_additional_curl_args = ''
 endif
 command! -bang Http call http#do_buffer('<bang>' == '!')
-command! HttpShowCurl call http#show_curl()
-command! HttpShowRequest call http#show_request()
+command! -bang HttpShowCurl call http#show_curl('<bang>' == '!')
+command! -bang HttpShowRequest call http#show_request('<bang>' == '!')
 command! HttpClean call http#clean()
 command! HttpAuth call http#auth()

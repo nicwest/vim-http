@@ -81,11 +81,13 @@ endfunction
 function! s:in_curl_format(request) abort
     let l:curl_fmt = 'curl%s%s%s%s %s'
 
-    let l:flags = ' -si '.g:vim_http_additional_curl_args.' '
+    let l:flags = ' -si'
 
     if a:request.meta.follow == 1
         let l:flags = l:flags . 'L'
     endif
+
+    let l:flags = l:flags.' '.g:vim_http_additional_curl_args
 
     let l:method = printf(' -X %s', a:request.method)
 
@@ -163,16 +165,16 @@ function! http#do_buffer(follow) abort
     call s:new_response_buffer(l:buffer, l:response)
 endfunction
 
-function! http#show_curl() abort
+function! http#show_curl(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, 0)
+    let l:request = s:parse_request_buffer(l:buffer, a:follow)
     let l:curl = s:in_curl_format(l:request)
     echo l:curl
 endfunction
 
-function! http#show_request() abort
+function! http#show_request(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, 0)
+    let l:request = s:parse_request_buffer(l:buffer, a:follow)
     echo l:request
 endfunction
 
