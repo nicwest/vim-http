@@ -5,6 +5,8 @@ vim-http
 
 simple wrapper over curl and http syntax highlighting.
 
+[![asciicast](https://asciinema.org/a/120707.png)](https://asciinema.org/a/120707)
+
 
 Usage
 ------
@@ -37,6 +39,9 @@ Configuration
 `g:vim_http_clean_before_do` if set to `1` (default) will clean a request before
 sending it to curl. Disable this by setting this global to `0`
 
+`g:vim_http_additional_curl_args` can be used to provide additional arguments
+to curl.
+
 Helper Methods
 --------------
 
@@ -60,8 +65,14 @@ function! s:clean_personal_stuff() abort
   call http#remove_header('Accept-Language')
 endfunction 
 
+function! s:add_compression() abort
+  call http#set_header('Accept-Encoding', 'deflate, gzip')
+  let g:vim_http_additional_curl_args = '--compressed'
+endfunction
+
 command! JSON call s:set_json_header()
 command! Anon call s:clean_personal_stuff()
+command! Compression call s:add_compression()
 ```
 
 

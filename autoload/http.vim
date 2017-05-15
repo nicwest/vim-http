@@ -81,7 +81,7 @@ endfunction
 function! s:in_curl_format(request) abort
     let l:curl_fmt = 'curl%s%s%s%s %s'
 
-    let l:flags = ' -si' 
+    let l:flags = ' -si '.g:vim_http_additional_curl_args.' '
 
     if a:request.meta.follow == 1
         let l:flags = l:flags . 'L'
@@ -222,14 +222,6 @@ function! http#auth() abort
   let l:password = input('password: ')
   let l:encoded = s:Base64.encode(l:user . ':' . l:password)
   let l:header = 'Authorization: ' . l:method . ' ' . l:encoded
-  call append(1 + len(l:request.headers), l:header)
-endfunction
-
-function! http#compressed() abort
-  let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, 0)
-
-  let l:header = 'Accept-Encoding: deflate, gzip'
   call append(1 + len(l:request.headers), l:header)
 endfunction
 
