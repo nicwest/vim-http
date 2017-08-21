@@ -144,14 +144,17 @@ endfunction
 function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
     let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
-    execute 'new ' . l:buffer_name
+    if g:vim_http_split_vertically
+      execute 'vert new ' . l:buffer_name
+    else
+      execute 'new ' . l:buffer_name
+    end
     set ft=http
 
     let l:response_lines = split(a:response, "\\(\r\n\\|\n\\)")
 
     call append(0, l:response_lines)
     norm! G"_ddgg
-
 endfunction
 
 function! http#do_buffer(follow) abort

@@ -43,6 +43,9 @@ sending it to curl. Disable this by setting this global to `0`
 `g:vim_http_additional_curl_args` can be used to provide additional arguments
 to curl.
 
+`g:vim_http_split_vertically` when set to `1` will split the window vertically
+on response rather than horizontally (the default).
+
 Helper Methods
 --------------
 
