@@ -98,6 +98,18 @@ function! s:suite.get_with_body_params()
     call s:assert_response('get_body_params')
 endfunction
 
+function! s:suite.http_1_0()
+    call s:load_request_expected('http_1_0')
+    Http!
+    call s:assert_response('http_1_0')
+endfunction
+
+function! s:suite.http_1_1()
+    call s:load_request_expected('http_1_1')
+    Http!
+    call s:assert_response('http_1_1')
+endfunction
+
 function! s:suite.redirect()
     call s:load_request_expected('redirect')
     Http
@@ -109,6 +121,7 @@ function! s:suite.redirect_with_follow()
     Http!
     call s:assert_response('redirect_follow')
 endfunction
+
 " }}}
 " POST :{{{1
 function! s:suite.post_json()
@@ -141,6 +154,16 @@ function! s:suite.clean()
           \ '    "foo": "bar",',
           \ '    "lol": "beans"',
           \ '}',
+          \ ]
+    call s:assert.equal(l:contents, l:expected)
+endfunction
+
+function! s:suite.clean_adds_host_on_http2_requests()
+    call s:load_request_expected('http_2')
+    HttpClean
+    let l:contents = getline(0, '$')
+    let l:expected = ['GET http://localhost:8000/get HTTP/2',
+          \ 'Host: localhost:8000',
           \ ]
     call s:assert.equal(l:contents, l:expected)
 endfunction

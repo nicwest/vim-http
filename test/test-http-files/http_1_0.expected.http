@@ -1,0 +1,19 @@
+HTTP/1.0 200 OK
+Server: gunicorn/%% '.*' %%
+Date: %% '.*' %%
+Connection: close
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+Content-Length: 189
+
+{
+  "args": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Host": "localhost:8000", 
+    "User-Agent": "curl/%% '.*' %%"
+  }, 
+  "origin": "%% '[0-9.]\+' %%", 
+  "url": "http://localhost:8000/get"
+}

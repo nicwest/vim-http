@@ -1,0 +1,2 @@
+GET http://localhost:8000/get HTTP/1.0
+Host: localhost:8000

@@ -45,6 +45,10 @@ function! s:parse_request_buffer(buffer, follow) abort
     let l:request.uri = l:uri_line_matches[2]
     let l:request.version = l:uri_line_matches[3]
 
+    if l:request.version =~ '2.*'
+      let l:request.version = '2'
+    end
+
     let l:in_content = 0
     let l:first_content_line = 1
     for l:line in l:lines[0:]
@@ -88,6 +92,8 @@ function! s:in_curl_format(request) abort
     endif
 
     let l:flags = l:flags.' '.g:vim_http_additional_curl_args
+
+    let l:flags = l:flags.' --http'.a:request.version
 
     let l:method = printf(' -X %s', a:request.method)
 
@@ -186,7 +192,7 @@ function! http#clean() abort
   let l:request = s:parse_request_buffer(l:buffer, 0)
 
   " when the http proto is > 1.0 make sure we are adding a host header
-  if index(['1.1', '2.0'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
+  if index(['1.1', '2'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
     let l:matches = matchlist(l:request.uri, '^\([^:]\+://\)\?\([^/]\+\)')
     let l:host = l:matches[2]
     if len(l:host)
