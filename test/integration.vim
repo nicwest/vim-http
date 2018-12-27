@@ -118,6 +118,14 @@ function! s:suite.post_json()
 endfunction
 
 " }}}
+" PATCH :{{{1
+function! s:suite.patch_json()
+    call s:load_request_expected('patch_json')
+    Http!
+    call s:assert_response('patch_json')
+endfunction
+
+" }}}
 " Clean :{{{1
 function! s:suite.clean()
     call s:load_request_expected('post_incomplete')

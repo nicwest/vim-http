@@ -19,7 +19,7 @@ function! s:new_request() abort
     
 endfunction
 
-let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\) \(.*\) HTTP/\([0-9.]\+\)$'
+let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
 function! s:parse_request_buffer(buffer, follow) abort

@@ -1,0 +1,28 @@
+HTTP/1.1 200 OK
+Server: gunicorn/%% '.*' %%
+Date: %% '.*' %%
+Connection: close
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+Content-Length: 420
+
+{
+  "args": {}, 
+  "data": "{\r\n    \"foo\": \"bar\",\r\n    \"lol\": \"beans\"\r\n}", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Accept": "*/*", 
+    "Content-Length": "43", 
+    "Content-Type": "application/json", 
+    "Host": "localhost:8000", 
+    "User-Agent": "curl/%% '.*' %%"
+  }, 
+  "json": {
+    "foo": "bar", 
+    "lol": "beans"
+  }, 
+  "origin": "%% '[0-9.]\+' %%", 
+  "url": "http://localhost:8000/patch"
+}

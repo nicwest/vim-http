@@ -1,0 +1,10 @@
+PATCH http://localhost:8000/patch HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Content-Length: 43
+
+
+{
+    "foo": "bar",
+    "lol": "beans"
+}
