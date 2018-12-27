@@ -7,7 +7,7 @@ endif
 let s:cpo_save = &cpo
 set cpo&vim
 
-syn keyword httpMethod  OPTIONS GET HEAD POST PUT DELETE TRACE CONNECT contained
+syn keyword httpMethod  OPTIONS GET HEAD POST PUT DELETE TRACE CONNECT PATCH contained
 
 syn match httpProto         'HTTP/[0-9.]\+' contained
 syn match httpStatusCode    '[0-9]\{3\}' contained
