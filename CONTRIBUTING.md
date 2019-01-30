@@ -18,6 +18,8 @@ That said, things that I'm unlikely to merge:
   things and/or if they need to bind stuff at all. I'm happy to merge
   suggestions into the README.
 
+* New functionality without tests.
+
 Tests
 -----
 
@@ -67,3 +69,9 @@ Or
 ```
 "User-Agent": "curl/latest"
 ```
+
+Style
+-----
+
+This project attempts to follow the 
+[Google Vimscript Style Guide](https://google.github.io/styleguide/vimscriptguide.xml)
