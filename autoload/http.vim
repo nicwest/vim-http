@@ -19,10 +19,11 @@ function! s:new_request() abort
     
 endfunction
 
+let s:pre_clean_uri_line_pattern = '^\(\a*\) \(.*\) HTTP/\([0-9.]\+\)\|$'
 let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
-function! s:parse_request_buffer(buffer, follow) abort
+function! s:parse_request_buffer(buffer, pattern, follow) abort
     let l:request = s:new_request()
     if a:follow == 1
         let l:request.meta.follow = 1
@@ -35,7 +36,7 @@ function! s:parse_request_buffer(buffer, follow) abort
     endif
 
     let l:uri_line = l:lines[0]
-    let l:uri_line_matches = matchlist(l:uri_line, s:uri_line_pattern)
+    let l:uri_line_matches = matchlist(l:uri_line, a:pattern)
 
     if len(l:uri_line_matches) == 0 
         throw 'Unable to parse first line of request'
@@ -162,7 +163,7 @@ function! http#do_buffer(follow) abort
       call http#clean()
     end
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, a:follow)
+    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
     let l:curl = s:in_curl_format(l:request)
     let l:response = system(l:curl)
     call s:new_response_buffer(l:buffer, l:response)
@@ -170,20 +171,20 @@ endfunction
 
 function! http#show_curl(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, a:follow)
+    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
     let l:curl = s:in_curl_format(l:request)
     echo l:curl
 endfunction
 
 function! http#show_request(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, a:follow)
+    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
     echo l:request
 endfunction
 
 function! http#clean() abort
   let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, 0)
+  let l:request = s:parse_request_buffer(l:buffer, s:pre_clean_uri_line_pattern, 0)
 
   " when the http proto is > 1.0 make sure we are adding a host header
   if index(['1.1', '2.0'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
@@ -192,6 +193,10 @@ function! http#clean() abort
     if len(l:host)
       call append(1, 'Host: ' . l:host)
     endif
+  endif
+
+  if l:request.version == ''
+    call setline('.', getline('.') . ' HTTP/1.1')
   endif
 
   let l:content_length = len(l:request.content)
@@ -217,7 +222,7 @@ endfunction
 
 function! http#auth() abort
   let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, 0)
+  let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, 0)
 
   let l:method = input('method [Basic]: ')
   if len(l:method) == 0
@@ -237,7 +242,7 @@ endfunction
 function! http#set_header(header, value) abort
   call s:remove_header(a:header)
   let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, 0)
+  let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, 0)
   call append(1 + len(l:request.headers), a:header.': '.a:value)
 endfunction
 
