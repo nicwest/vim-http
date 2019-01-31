@@ -186,6 +186,14 @@ function! s:suite.clean_replaces_invalid_content_length_header()
   call s:assert.equal(l:contents, l:expected)
 endfunction
 
+function! s:suite.clean_appends_protocol()
+  call s:load_request_expected('simple_get_without_protocol')
+  call s:command_with_input('HttpClean', ['Y'])
+  let l:contents = getline(0, '$')
+  let l:expected = ['GET http://localhost:8000/get HTTP/1.1']
+  call s:assert.equal(l:contents, l:expected)
+endfunction
+
 " }}}
 " Auth: {{{1
 function! s:suite.auth()
