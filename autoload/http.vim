@@ -158,11 +158,14 @@ function! s:new_response_buffer(request_buffer, response) abort
         endif
       endfor
     endif
-    if g:vim_http_split_vertically
-      execute 'vert new ' . l:buffer_name
-    else
-      execute 'new ' . l:buffer_name
-    end
+    " if g:vim_http_split_vertically
+    "   execute 'vert new ' . l:buffer_name
+    " else
+    "   execute 'new ' . l:buffer_name
+    " end
+    let l:keepalt = g:vim_http_tempbuffer ? 'keepalt ' : ''
+    let l:vert = g:vim_http_split_vertically ? 'vert ' : ''
+    execute l:keepalt . l:vert . 'new ' . l:buffer_name
     set ft=http
     if g:vim_http_tempbuffer
       setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nonumber
