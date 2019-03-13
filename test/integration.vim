@@ -240,4 +240,20 @@ function! s:suite.set_header()
 endfunction
 " }}}
 " Misc: {{{1
+function! s:suite.tempbuffer()
+    let l:expected = filter(range(1, bufnr('$')), 'bufexists(v:val)')
+    let l:vim_http_tempbuffer = g:vim_http_tempbuffer
+    let g:vim_http_tempbuffer = 1
+
+    call s:load_request_expected('simple_get')
+    Http
+    wincmd p
+    call s:load_request_expected('get_url_params')
+    Http
+    wincmd c
+
+    let g:vim_http_tempbuffer = l:vim_http_tempbuffer
+    let l:contents = filter(range(1, bufnr('$')), 'bufexists(v:val)')
+    call s:assert.equal(l:contents, l:expected)
+endfunction
 " vim:fdm=marker
