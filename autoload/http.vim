@@ -152,9 +152,9 @@ function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
     let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
     if g:vim_http_tempbuffer
-      for win in range(1, winnr('$'))
-        if getwinvar(win, 'vim_http_tempbuffer')
           execute win . 'windo close'
+      for l:win in range(1, winnr('$'))
+        if getwinvar(l:win, 'vim_http_tempbuffer')
         endif
       endfor
     endif
