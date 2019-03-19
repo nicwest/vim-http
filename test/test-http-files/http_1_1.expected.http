@@ -5,7 +5,7 @@ Connection: close
 Content-Type: application/json
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Credentials: true
-Content-Length: 189
+Content-Length: %% '[0-9]\+' %%
 
 {
   "args": {}, 

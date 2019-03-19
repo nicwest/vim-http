@@ -20,6 +20,22 @@ That said, things that I'm unlikely to merge:
 
 * New functionality without tests.
 
+Support
+-------
+
+I aim to support versions of vim from 7.4.566 
+(see https://github.com/nicwest/vim-http/pull/5#issuecomment-472483160) to
+whatever the latest version is.
+
+Any changes to keep this plug-in up to date are welcome. Reasonable changes
+that allow us to support older versions are also welcome but are not required.
+
+Generally speaking I'm looking to not break things for older versions of vim
+or curl, however sometimes compromises are needed. In a case where the oldest
+supported version increases I'll tag the previous commit for people with older
+setups.
+
+
 Tests
 -----
 

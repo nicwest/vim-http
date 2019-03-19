@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/nicwest/vim-http.svg?branch=master)](https://travis-ci.org/nicwest/vim-http)
+[![CircleCI](https://circleci.com/gh/nicwest/vim-http/tree/master.svg?style=svg)](https://circleci.com/gh/nicwest/vim-http/tree/master)
 [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
 
 vim-http
