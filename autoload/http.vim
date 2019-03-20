@@ -151,12 +151,21 @@ endfunction
 function! s:new_response_buffer(request_buffer, response) abort
     let l:request_buffer_name  = bufname(a:request_buffer)
     let l:buffer_name = fnamemodify(l:request_buffer_name, ":r") . '.response.' . localtime() . '.http'
-    if g:vim_http_split_vertically
-      execute 'vert new ' . l:buffer_name
-    else
-      execute 'new ' . l:buffer_name
-    end
+    if g:vim_http_tempbuffer
+      for l:win in range(1, winnr('$'))
+        if getwinvar(l:win, 'vim_http_tempbuffer')
+          execute l:win . 'windo close'
+        endif
+      endfor
+    endif
+    let l:keepalt = g:vim_http_tempbuffer ? 'keepalt ' : ''
+    let l:vert = g:vim_http_split_vertically ? 'vert ' : ''
+    execute l:keepalt . l:vert . 'new ' . l:buffer_name
     set ft=http
+    if g:vim_http_tempbuffer
+      setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nonumber
+      let w:vim_http_tempbuffer = 1
+    endif
 
     let l:response_lines = split(a:response, "\\(\r\n\\|\n\\)")
 
