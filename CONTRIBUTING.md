@@ -35,6 +35,8 @@ or curl, however sometimes compromises are needed. In a case where the oldest
 supported version increases I'll tag the previous commit for people with older
 setups.
 
+* [<7.4.566](https://github.com/nicwest/vim-http/tree/pre-7.4.566) [#5](https://github.com/nicwest/vim-http/pull/5)
+
 
 Tests
 -----
