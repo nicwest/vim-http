@@ -11,7 +11,7 @@ if !exists('g:vim_http_tempbuffer')
   let g:vim_http_tempbuffer = 0
 endif
 
-command! -bang Http call http#do_buffer('<bang>' == '!')
+command! -bang Http call http#do_buffer('<bang>' == '!', '')
 command! -bang HttpShowCurl call http#show_curl('<bang>' == '!')
 command! -bang HttpShowRequest call http#show_request('<bang>' == '!')
 command! HttpClean call http#clean()

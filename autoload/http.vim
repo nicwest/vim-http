@@ -5,7 +5,7 @@ let s:V = vital#vim_http#new()
 let s:Base64 = s:V.import('Data.Base64')
 
 function! s:new_request() abort
-    let l:response = { 
+    let l:response = {
                 \ 'method': 'GET',
                 \ 'headers': {},
                 \ 'uri': '',
@@ -16,29 +16,48 @@ function! s:new_request() abort
                 \   }
                 \ }
     return l:response
-    
 endfunction
 
 let s:pre_clean_uri_line_pattern = '^\(\a*\) \(.*\) HTTP/\([0-9.]\+\)\|$'
 let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
-function! s:parse_request_buffer(buffer, pattern, follow) abort
+function! s:get_visual_selection()
+    " Why is this not a built-in Vim script function?!
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return []
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return lines
+endfunction
+
+function! s:get_lines(buffer, range)
+    if a:range=="'<,'>"
+      return s:get_visual_selection()
+    end
+    if a:range=='' || a:range=='%'
+      return getbufline(a:buffer, 0, '$')
+    end
+endfunction
+
+function! s:parse_request_buffer(lines, pattern, follow) abort
     let l:request = s:new_request()
     if a:follow == 1
         let l:request.meta.follow = 1
     end
-    
-    let l:lines = getbufline(a:buffer, 0, '$')
-    
-    if len(l:lines) < 0 
+
+    if len(a:lines) < 0
         throw 'No lines in buffer :('
     endif
 
-    let l:uri_line = l:lines[0]
+    let l:uri_line = a:lines[0]
     let l:uri_line_matches = matchlist(l:uri_line, a:pattern)
 
-    if len(l:uri_line_matches) == 0 
+    if len(l:uri_line_matches) == 0
         throw 'Unable to parse first line of request'
     end
 
@@ -52,7 +71,7 @@ function! s:parse_request_buffer(buffer, pattern, follow) abort
 
     let l:in_content = 0
     let l:first_content_line = 1
-    for l:line in l:lines[0:]
+    for l:line in a:lines[0:]
         if l:in_content == 0 && l:line =~ '^\s*$'
             let l:in_content = 1
         end
@@ -111,11 +130,11 @@ function! s:in_curl_format(request) abort
         endfor
 
     endfor
-    
+
     let l:data = ''
     if len(a:request.content)
         let l:data = ' -d ' . substitute(shellescape(a:request.content), '\\\n', "\n", 'g')
-    endif  
+    endif
 
     let l:curl_request = printf(l:curl_fmt, l:flags, l:method, l:headers, l:data, l:url)
 
@@ -173,12 +192,17 @@ function! s:new_response_buffer(request_buffer, response) abort
     norm! G"_ddgg
 endfunction
 
-function! http#do_buffer(follow) abort
+function! http#lines(range)
+    return s:get_lines(bufnr(''), a:range)
+endfunction
+
+function! http#do_buffer(follow, range) abort
     if g:vim_http_clean_before_do
       call http#clean()
     end
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    let l:lines = s:get_lines(l:buffer, a:range)
+    let l:request = s:parse_request_buffer(l:lines, s:uri_line_pattern, a:follow)
     let l:curl = s:in_curl_format(l:request)
     let l:response = system(l:curl)
     call s:new_response_buffer(l:buffer, l:response)
@@ -186,20 +210,26 @@ endfunction
 
 function! http#show_curl(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    let l:range = ''
+    let l:lines = s:get_lines(l:buffer, l:range)
+    let l:request = s:parse_request_buffer(l:lines, s:uri_line_pattern, a:follow)
     let l:curl = s:in_curl_format(l:request)
     echo l:curl
 endfunction
 
 function! http#show_request(follow) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    let l:range = ''
+    let l:lines = s:get_lines(l:buffer, l:range)
+    let l:request = s:parse_request_buffer(l:lines, s:uri_line_pattern, a:follow)
     echo l:request
 endfunction
 
 function! http#clean() abort
   let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, s:pre_clean_uri_line_pattern, 0)
+  let l:range = ''
+  let l:lines = s:get_lines(l:buffer, l:range)
+  let l:request = s:parse_request_buffer(l:lines, s:uri_line_pattern, a:follow)
 
   " when the http proto is > 1.0 make sure we are adding a host header
   if index(['1.1', '2'], l:request.version) != -1 && !has_key(l:request.headers, 'Host')
@@ -237,7 +267,9 @@ endfunction
 
 function! http#auth() abort
   let l:buffer = bufnr('')
-  let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, 0)
+  let l:range = ''
+  let l:lines = s:get_lines(l:buffer, l:range)
+  let l:request = s:parse_request_buffer(l:lines, s:uri_line_pattern, a:follow)
 
   let l:method = input('method [Basic]: ')
   if len(l:method) == 0
@@ -257,6 +289,7 @@ endfunction
 function! http#set_header(header, value) abort
   call s:remove_header(a:header)
   let l:buffer = bufnr('')
+  let l:lines = s:get_lines(l:buffer, '')
   let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, 0)
   call append(1 + len(l:request.headers), a:header.': '.a:value)
 endfunction
