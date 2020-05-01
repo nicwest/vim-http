@@ -11,8 +11,19 @@ if !exists('g:vim_http_tempbuffer')
   let g:vim_http_tempbuffer = 0
 endif
 
-command! -bang Http call http#do_buffer('<bang>' == '!')
-command! -bang HttpShowCurl call http#show_curl('<bang>' == '!')
-command! -bang HttpShowRequest call http#show_request('<bang>' == '!')
+function! s:do(bang, range, line1, line2, action) abort
+  let l:follow = a:bang == '!'
+  if a:range == 2
+    call http#do_lines(l:follow, a:line1, a:line2)
+  elseif a:range == 1
+    throw 'Cowardly refusing to execute multiple times'
+  else
+    call http#do_buffer(l:follow)
+  endif
+endfunction
+
+command! -bang -range Http call s:do('<bang>', '<range>', '<line1>', '<line2>')
+command! -bang -range HttpShowCurl call http#show_curl('<bang>' == '!', '<range>', '<line1>', '<line2>')
+command! -bang -range HttpShowRequest call http#show_request('<bang>' == '!', '<range>', '<line1>', '<line2>')
 command! HttpClean call http#clean()
 command! HttpAuth call http#auth()

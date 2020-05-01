@@ -38,7 +38,7 @@ function! s:parse_request_lines(lines, pattern, follow) abort
 
     if len(l:uri_line_matches) == 0 
         throw 'Unable to parse first line of request'
-    end
+    endif
 
     let l:request.method = l:uri_line_matches[1]
     let l:request.uri = l:uri_line_matches[2]
@@ -46,14 +46,14 @@ function! s:parse_request_lines(lines, pattern, follow) abort
 
     if l:request.version =~ '2.*'
       let l:request.version = '2'
-    end
+    endif
 
     let l:in_content = 0
     let l:first_content_line = 1
     for l:line in a:lines[0:]
         if l:in_content == 0 && l:line =~ '^\s*$'
             let l:in_content = 1
-        end
+        endif
         if l:in_content == 0
             let l:header_matches = matchlist(l:line, s:header_line_pattern)
 
@@ -187,16 +187,39 @@ function! http#do_buffer(follow) abort
     call s:new_response_buffer(l:buffer, l:response)
 endfunction
 
-function! http#show_curl(follow) abort
+function! http#do_lines(follow, line1, line2) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    let l:lines = getbufline(l:buffer, a:line1, a:line2)
+    let l:request = s:parse_request_lines(l:lines, s:uri_line_pattern, a:follow)
+    let l:curl = s:in_curl_format(l:request)
+    let l:response = system(l:curl)
+    call s:new_response_buffer(l:buffer, l:response)
+endfunction
+
+function! http#show_curl(follow, range, line1, line2) abort
+    let l:buffer = bufnr('')
+    if a:range == 2
+      let l:lines = getbufline(l:buffer, a:line1, a:line2)
+      let l:request = s:parse_request_lines(l:lines, s:uri_line_pattern, a:follow)
+    elseif a:range == 1
+      throw "This feels some what pointless?"
+    else
+      let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    endif
     let l:curl = s:in_curl_format(l:request)
     echo l:curl
 endfunction
 
-function! http#show_request(follow) abort
+function! http#show_request(follow, range, line1, line2) abort
     let l:buffer = bufnr('')
-    let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    if a:range == 2
+      let l:lines = getbufline(l:buffer, a:line1, a:line2)
+      let l:request = s:parse_request_lines(l:lines, s:uri_line_pattern, a:follow)
+    elseif a:range == 1
+      throw "This feels some what pointless?"
+    else
+      let l:request = s:parse_request_buffer(l:buffer, s:uri_line_pattern, a:follow)
+    endif
     echo l:request
 endfunction
 
