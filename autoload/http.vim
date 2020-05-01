@@ -23,19 +23,17 @@ let s:pre_clean_uri_line_pattern = '^\(\a*\) \(.*\) HTTP/\([0-9.]\+\)\|$'
 let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
-function! s:parse_request_buffer(buffer, pattern, follow) abort
+function! s:parse_request_lines(lines, pattern, follow) abort
     let l:request = s:new_request()
     if a:follow == 1
         let l:request.meta.follow = 1
     end
     
-    let l:lines = getbufline(a:buffer, 0, '$')
-    
-    if len(l:lines) < 0 
+    if len(a:lines) < 0 
         throw 'No lines in buffer :('
     endif
 
-    let l:uri_line = l:lines[0]
+    let l:uri_line = a:lines[0]
     let l:uri_line_matches = matchlist(l:uri_line, a:pattern)
 
     if len(l:uri_line_matches) == 0 
@@ -52,7 +50,7 @@ function! s:parse_request_buffer(buffer, pattern, follow) abort
 
     let l:in_content = 0
     let l:first_content_line = 1
-    for l:line in l:lines[0:]
+    for l:line in a:lines[0:]
         if l:in_content == 0 && l:line =~ '^\s*$'
             let l:in_content = 1
         end
@@ -81,6 +79,11 @@ function! s:parse_request_buffer(buffer, pattern, follow) abort
     endfor
 
     return l:request
+endfunction
+
+function! s:parse_request_buffer(buffer, pattern, follow) abort
+    let l:lines = getbufline(a:buffer, 0, '$')
+    return s:parse_request_lines(lines, a:pattern, a:follow)
 endfunction
 
 function! s:in_curl_format(request) abort
