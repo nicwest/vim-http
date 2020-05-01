@@ -17,6 +17,11 @@ function! s:load_request_expected(name) abort
     execute 'edit! ' . l:request_path
 endfunction
 
+function! s:load_request_expected_explicit(name) abort
+    let l:request_path = g:http_test_files . a:name
+    execute 'edit! ' . l:request_path
+endfunction
+
 function s:assert_response(name) abort
     let l:expected_path = g:http_test_files . a:name . '.expected.http'
     let l:expected = readfile(l:expected_path)
@@ -258,4 +263,13 @@ function! s:suite.tempbuffer()
     let g:vim_http_tempbuffer = l:vim_http_tempbuffer
     call s:assert.equal(l:contents, l:expected)
 endfunction
+
+" Range: {{{1
+
+function! s:suite.redirect_with_follow()
+    call s:load_request_expected_explicit('example_in_docs.md')
+    14,15Http!
+    call s:assert_response('simple_get')
+endfunction
+
 " vim:fdm=marker
