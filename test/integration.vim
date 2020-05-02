@@ -17,10 +17,15 @@ function! s:load_request_expected(name) abort
     execute 'edit! ' . l:request_path
 endfunction
 
-function s:assert_response(name) abort
-    let l:expected_path = g:http_test_files . a:name . '.expected.http'
+function! s:load_request_expected_explicit(name) abort
+    let l:request_path = g:http_test_files . a:name
+    execute 'edit! ' . l:request_path
+endfunction
+
+function s:assert_response_explicit(filepath, name) abort
+    let l:expected_path = g:http_test_files . a:filepath
     let l:expected = readfile(l:expected_path)
-    let l:lines = getbufline(a:name . '.response.*.http', 0, '$')
+    let l:lines = getbufline(a:name, 0, '$')
 
     let l:bad = 0
     let l:lnr = 0
@@ -73,6 +78,10 @@ function s:assert_response(name) abort
         let l:msg = l:msg + [''] + l:lines + ['', 'Expected:'] + l:expected
         throw themis#failure(msg)
     endif
+endfunction
+
+function s:assert_response(name) abort
+  call s:assert_response_explicit(a:name . '.expected.http', a:name . '.response.*.http')
 endfunction
 
 function! s:command_with_input(cmd, input)
@@ -258,4 +267,13 @@ function! s:suite.tempbuffer()
     let g:vim_http_tempbuffer = l:vim_http_tempbuffer
     call s:assert.equal(l:contents, l:expected)
 endfunction
+
+" Range: {{{1
+
+function! s:suite.do_with_range()
+    call s:load_request_expected_explicit('example_in_docs.md')
+    14,15Http!
+    call s:assert_response_explicit('simple_get.expected.http', 'example_in_docs.response.*.http')
+endfunction
+
 " vim:fdm=marker

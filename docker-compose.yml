@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  httpbin:
+    image: citizenstig/httpbin
+  oldest:
+    image: thinca/vim:v7.4.566
+    volumes:
+      - .:/root/.vim
+  latest:
+    image: thinca/vim:latest
+    volumes:
+      - .:/root/.vim
