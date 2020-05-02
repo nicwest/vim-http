@@ -178,7 +178,12 @@ function! s:new_response_buffer(request_buffer, response) abort
     norm! G"_ddgg
 endfunction
 
-function! http#do_buffer(bang, count, line1, line2) abort
+function! http#do_buffer(follow) abort
+    let l:bang =  a:follow ? '!' : ''
+    call http#do(l:bang, -1, 0, 0)
+endfunction
+
+function! http#do(bang, count, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
     if g:vim_http_clean_before_do && a:count == -1
       call http#clean()
