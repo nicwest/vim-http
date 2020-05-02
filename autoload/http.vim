@@ -22,7 +22,7 @@ let s:pre_clean_uri_line_pattern = '^\(\a*\) \(.*\) HTTP/\([0-9.]\+\)\|$'
 let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
-function! s:get_lines(buffer, range, line1, line2)
+function! s:get_lines(buffer, range, line1, line2) abort
     if a:range == 2
       return getbufline(a:buffer, a:line1, a:line2)
     elseif a:range == 1
@@ -193,7 +193,7 @@ function! http#do_buffer(bang, range, line1, line2) abort
     call s:new_response_buffer(l:buffer, l:response)
 endfunction
 
-function! http#show_curl(follow) abort
+function! http#show_curl(bang, range, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
     let l:buffer = bufnr('')
     let l:lines = s:get_lines(l:buffer, a:range, a:line1, a:line2)
@@ -202,7 +202,7 @@ function! http#show_curl(follow) abort
     echo l:curl
 endfunction
 
-function! http#show_request(follow) abort
+function! http#show_request(bang, range, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
     let l:buffer = bufnr('')
     let l:lines = s:get_lines(l:buffer, a:range, a:line1, a:line2)
