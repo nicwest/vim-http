@@ -11,8 +11,8 @@ if !exists('g:vim_http_tempbuffer')
   let g:vim_http_tempbuffer = 0
 endif
 
-command! -bang -range Http call http#do_buffer('<bang>', '<range>', '<line1>', '<line2>')
-command! -bang -range HttpShowCurl call http#show_curl('<bang>', '<range>', '<line1>', '<line2>')
-command! -bang -range HttpShowRequest call http#show_request('<bang>', '<range>', '<line1>', '<line2>')
+command! -bang -range Http call http#do_buffer('<bang>', '<count>', '<line1>', '<line2>')
+command! -bang -range HttpShowCurl call http#show_curl('<bang>', '<count>', '<line1>', '<line2>')
+command! -bang -range HttpShowRequest call http#show_request('<bang>', '<count>', '<line1>', '<line2>')
 command! HttpClean call http#clean()
 command! HttpAuth call http#auth()

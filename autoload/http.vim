@@ -22,13 +22,11 @@ let s:pre_clean_uri_line_pattern = '^\(\a*\) \(.*\) HTTP/\([0-9.]\+\)\|$'
 let s:uri_line_pattern = '^\(OPTIONS\|GET\|HEAD\|POST\|PUT\|DELETE\|TRACE\|CONNECT\|PATCH\) \(.*\) HTTP/\([0-9.]\+\)$'
 let s:header_line_pattern = '^\([^:]\+\): \(.*\)$'
 
-function! s:get_lines(buffer, range, line1, line2) abort
-    if a:range == 2
-      return getbufline(a:buffer, a:line1, a:line2)
-    elseif a:range == 1
-      throw 'Cowardly refusing to run multiple times'
-    else
+function! s:get_lines(buffer, count, line1, line2) abort
+    if a:count == -1
       return getbufline(a:buffer, 0, '$')
+    else
+      return getbufline(a:buffer, a:line1, a:line2)
     endif
 endfunction
 
@@ -180,39 +178,39 @@ function! s:new_response_buffer(request_buffer, response) abort
     norm! G"_ddgg
 endfunction
 
-function! http#do_buffer(bang, range, line1, line2) abort
+function! http#do_buffer(bang, count, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
-    if g:vim_http_clean_before_do && !a:range
+    if g:vim_http_clean_before_do && a:count == -1
       call http#clean()
     end
     let l:buffer = bufnr('')
-    let l:lines = s:get_lines(l:buffer, a:range, a:line1, a:line2)
+    let l:lines = s:get_lines(l:buffer, a:count, a:line1, a:line2)
     let l:request = s:parse_request(l:lines, s:uri_line_pattern, l:follow)
     let l:curl = s:in_curl_format(l:request)
     let l:response = system(l:curl)
     call s:new_response_buffer(l:buffer, l:response)
 endfunction
 
-function! http#show_curl(bang, range, line1, line2) abort
+function! http#show_curl(bang, count, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
     let l:buffer = bufnr('')
-    let l:lines = s:get_lines(l:buffer, a:range, a:line1, a:line2)
+    let l:lines = s:get_lines(l:buffer, a:count, a:line1, a:line2)
     let l:request = s:parse_request(l:lines, s:uri_line_pattern, l:follow)
     let l:curl = s:in_curl_format(l:request)
     echo l:curl
 endfunction
 
-function! http#show_request(bang, range, line1, line2) abort
+function! http#show_request(bang, count, line1, line2) abort
     let l:follow =  a:bang == '!' ? 1 : 0
     let l:buffer = bufnr('')
-    let l:lines = s:get_lines(l:buffer, a:range, a:line1, a:line2)
+    let l:lines = s:get_lines(l:buffer, a:count, a:line1, a:line2)
     let l:request = s:parse_request(l:lines, s:uri_line_pattern, l:follow)
     echo l:request
 endfunction
 
 function! http#clean() abort
   let l:buffer = bufnr('')
-  let l:lines = s:get_lines(l:buffer, 0, 0, 0)
+  let l:lines = s:get_lines(l:buffer, -1, 0, 0)
   let l:request = s:parse_request(l:lines, s:pre_clean_uri_line_pattern, 0)
 
   " when the http proto is > 1.0 make sure we are adding a host header
@@ -251,7 +249,7 @@ endfunction
 
 function! http#auth() abort
   let l:buffer = bufnr('')
-  let l:lines = s:get_lines(l:buffer, 0, 0, 0)
+  let l:lines = s:get_lines(l:buffer, -1, 0, 0)
   let l:request = s:parse_request(l:lines, s:uri_line_pattern, 0)
 
   let l:method = input('method [Basic]: ')
@@ -272,7 +270,7 @@ endfunction
 function! http#set_header(header, value) abort
   call s:remove_header(a:header)
   let l:buffer = bufnr('')
-  let l:lines = s:get_lines(l:buffer, 0, 0, 0)
+  let l:lines = s:get_lines(l:buffer, -1, 0, 0)
   let l:request = s:parse_request(l:lines, s:uri_line_pattern, 0)
   call append(1 + len(l:request.headers), a:header.': '.a:value)
 endfunction
