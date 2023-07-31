@@ -46,6 +46,9 @@ to curl.
 `g:vim_http_split_vertically` when set to `1` will split the window vertically
 on response rather than horizontally (the default).
 
+`g:vim_http_right_below` when set to `1` split window will be open on the
+right (for vertical) or below (for horizontal).
+
 `g:vim_http_tempbuffer` when set to `1` response buffers will overwrite each
 other instead of persisting forever.
 

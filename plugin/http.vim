@@ -7,6 +7,9 @@ endif
 if !exists('g:vim_http_split_vertically')
   let g:vim_http_split_vertically = 0
 endif
+if !exists('g:vim_http_right_below')
+  let g:vim_http_right_below = 0
+endif
 if !exists('g:vim_http_tempbuffer')
   let g:vim_http_tempbuffer = 0
 endif
