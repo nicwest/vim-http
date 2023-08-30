@@ -163,9 +163,10 @@ function! s:new_response_buffer(request_buffer, response) abort
         endif
       endfor
     endif
+    let l:rightbelow = g:vim_http_right_below ? 'rightbelow ' : ''
     let l:keepalt = g:vim_http_tempbuffer ? 'keepalt ' : ''
     let l:vert = g:vim_http_split_vertically ? 'vert ' : ''
-    execute l:keepalt . l:vert . 'new ' . l:buffer_name
+    execute l:keepalt . l:rightbelow . l:vert . 'new ' . l:buffer_name
     set ft=http
     if g:vim_http_tempbuffer
       setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nonumber
