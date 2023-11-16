@@ -77,10 +77,20 @@ endfunction
 
 function! s:add_compression() abort
   call http#set_header('Accept-Encoding', 'deflate, gzip')
-  let g:vim_http_additional_curl_args = '--compressed'
+  if exists('g:vim_http_additional_curl_args')
+    let g:vim_http_additional_curl_args .= ' --compressed'
+  else
+    let g:vim_http_additional_curl_args  = ' --compressed'
+  endif
+endfunction
+function! s:remove_compression() abort
+  call http#remove_header('Accept-Encoding')
+  if exists('g:vim_http_additional_curl_args')
+    let g:vim_http_additional_curl_args = substitute(g:vim_http_additional_curl_args, '--compressed', '', 'g')
+  endif
 endfunction
 
-command! JSON call s:set_json_header()
-command! Anon call s:clean_personal_stuff()
-command! Compression call s:add_compression()
+command!       JSON         call s:set_json_header()
+command!       Anon         call s:clean_personal_stuff()
+command! -bang Compression  if <bang>1|call s:add_compression()|else|call s:remove_compression()
 ```
